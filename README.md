@@ -1,8 +1,9 @@
 # Better Auth Protection Demo
 
+## Technical Stack
 <div align="center">
 
-![Next.js](https://img.shields.io/badge/Next.js-15-black?style=flat-square&logo=next.js&logoColor=white)
+![Next.js 15](https://img.shields.io/badge/Next.js-15-black?style=flat-square&logo=next.js&logoColor=white)
 ![Better Auth](https://img.shields.io/badge/Better%20Auth-FF6B35?style=flat-square&logo=shield&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat-square&logo=typescript&logoColor=white)
 ![Shadcn UI](https://img.shields.io/badge/Shadcn%20UI-black?style=flat-square&logo=shadcnui&logoColor=white)
@@ -18,6 +19,38 @@ A modern Next.js application demonstrating secure authentication with **Better A
 [🚀 Live Demo](#) • [📖 Documentation](#learn-more) • [🐛 Report Bug](#) • [✨ Request Feature](#)
 
 </div>
+
+
+## Add Drizzle
+
+```bash
+npm i drizzle-orm @neondatabase/serverless dotenv
+npm i -D drizzle-kit tsx
+```
+
+```env
+DATABASE_URL=postgresql://postgres:password@localhost:5432/postgres
+```
+
+Create the database file under `db/db.ts`
+
+Create the drizzle.config.ts file under the root directory
+
+then run to generate the schema of authentication
+
+```bash
+npx @better-auth/cli generate
+```
+
+Push schema to the database
+
+```bash
+npx drizzle-kit push
+```
+
+
+### Technical Stack
+
 
 ## 🚀 Features
 
@@ -35,16 +68,6 @@ A modern Next.js application demonstrating secure authentication with **Better A
 - **Loading States** - Smooth loading indicators and error handling
 - **Toast Notifications** - User-friendly feedback with Sonner
 
-### Technical Stack
-
-<div align="center">
-
-![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js&logoColor=white)
-![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
-![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
-
-</div>
 
 #### Core Technologies
 - **Next.js 15** ![Next.js](https://img.shields.io/badge/Next.js-15-black?style=flat-square&logo=next.js&logoColor=white) - Latest React framework with App Router
@@ -116,7 +139,7 @@ A modern Next.js application demonstrating secure authentication with **Better A
 
 3. **Environment Setup**
    
-   Create a `.env.local` file in the root directory:
+   Create a `.env` file in the root directory:
    ```env
    # App URL (for development)
    NEXT_PUBLIC_APP_URL=http://localhost:3000
