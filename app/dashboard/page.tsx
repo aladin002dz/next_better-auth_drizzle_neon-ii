@@ -1,5 +1,6 @@
 "use client";
 
+import EmailVerificationBanner from "@/components/email-verification-banner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -78,13 +79,16 @@ export default function Dashboard() {
                     </Button>
                 </div>
 
+                {/* Email Verification Banner */}
+                <EmailVerificationBanner />
+
                 {/* Welcome Section */}
                 <div className="mb-8">
                     <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
                         Welcome back, {user.name || user.email}!
                     </h1>
                     <p className="text-gray-600 dark:text-gray-300">
-                        Here's your account overview and information.
+                        Here&apos;s your account overview and information.
                     </p>
                 </div>
 
