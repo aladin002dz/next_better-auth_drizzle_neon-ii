@@ -8,7 +8,7 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { resendVerificationEmail, verifyEmail } from "@/lib/auth-client";
+import { sendVerificationEmail } from "@/lib/auth-client";
 import { CheckCircle, Loader2, Mail } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
@@ -20,23 +20,21 @@ export default function EmailVerification() {
     const [resending, setResending] = useState(false);
     const router = useRouter();
     const searchParams = useSearchParams();
-    const token = searchParams.get('token');
-    const email = searchParams.get('email');
+    const token = searchParams.get('token') || '123456';
+    const email = searchParams.get('email') || 'mahfoudh.arous@gmail.com';
 
     const handleVerification = useCallback(async () => {
         if (!token) return;
 
         setLoading(true);
         try {
-            await verifyEmail({
-                token,
+            await sendVerificationEmail({
+                email,
+                callbackURL: "/dashboard",
                 fetchOptions: {
                     onSuccess: () => {
                         setVerified(true);
                         toast.success("Email verified successfully!");
-                        setTimeout(() => {
-                            router.push("/dashboard");
-                        }, 2000);
                     },
                     onError: (ctx) => {
                         toast.error(ctx.error.message || "Verification failed");

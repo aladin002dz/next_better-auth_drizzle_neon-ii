@@ -14,5 +14,5 @@ export const {
     signUp,
     useSession,
     verifyEmail,
-    resendVerificationEmail
+    sendVerificationEmail,
 } = authClient; 
