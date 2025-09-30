@@ -168,8 +168,8 @@ export default function SignUp() {
                                         toast.error(ctx.error.message);
                                     },
                                     onSuccess: async () => {
-                                        // Redirect to email verification page instead of dashboard
-                                        router.push("/verify-email?email=" + encodeURIComponent(email));
+                                        // Redirect to dashboard after successful sign up
+                                        router.push("/dashboard");
                                     },
                                 },
                             });
