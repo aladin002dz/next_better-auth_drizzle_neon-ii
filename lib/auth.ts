@@ -1,5 +1,6 @@
 
 import { db } from '@/db/db';
+import WelcomeVerificationEmail from '@/lib/email/WelcomeVerificationEmail';
 import { resend } from '@/lib/resend-client';
 import {
     betterAuth
@@ -35,17 +36,10 @@ export const auth = betterAuth({
                     from: `"MaroStudio" <${process.env.EMAIL_FROM}>`,
                     to: user.email,
                     subject: "Verify your email address",
-                    html: `
-                <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
-                  <h2>Welcome!</h2>
-                  <p>Thanks for signing up. Please verify your email address by clicking the button below:</p>
-                  <a href="${url}" style="display: inline-block; background-color: #000; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 16px 0;">
-                    Verify Email
-                  </a>
-                  <p style="color: #666; font-size: 14px;">Or copy and paste this link into your browser:</p>
-                  <p style="color: #666; font-size: 14px; word-break: break-all;">${url}</p>
-                </div>
-              `,
+                    react: WelcomeVerificationEmail({
+                        userName: user.name || user.email,
+                        verificationUrl: url
+                    })
                 })
             } catch (error) {
                 console.error("Failed to send verification email:", error)
