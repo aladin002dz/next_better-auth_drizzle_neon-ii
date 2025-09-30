@@ -166,7 +166,10 @@ export default function SignIn() {
                                         setLoading(true);
                                     },
                                     onError: (ctx) => {
+                                        console.log("ctx=============================");
+                                        console.log(ctx.error.message);
                                         toast.error(ctx.error.message);
+                                        setLoading(false);
                                     },
                                     onSuccess: async () => {
                                         router.push("/dashboard");

@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { resendVerificationEmail, useSession } from "@/lib/auth-client";
+import { sendVerificationEmail, useSession } from "@/lib/auth-client";
 import { Mail, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -27,7 +27,7 @@ export default function EmailVerificationBanner() {
 
         setResending(true);
         try {
-            await resendVerificationEmail({
+            await sendVerificationEmail({
                 email: session.user.email,
                 fetchOptions: {
                     onSuccess: () => {
@@ -45,9 +45,6 @@ export default function EmailVerificationBanner() {
         }
     };
 
-    const handleVerifyNow = () => {
-        router.push("/verify-email?email=" + encodeURIComponent(session.user.email));
-    };
 
     return (
         <Card className="border-amber-200 bg-amber-50">
@@ -69,10 +66,10 @@ export default function EmailVerificationBanner() {
                     <Button
                         size="sm"
                         variant="outline"
-                        onClick={handleVerifyNow}
+                        onClick={handleResendVerification}
                         className="text-amber-700 border-amber-300 hover:bg-amber-100"
                     >
-                        Verify Now
+                        Resend Verification Email
                     </Button>
                     <Button
                         size="sm"
