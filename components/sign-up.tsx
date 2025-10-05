@@ -23,6 +23,7 @@ export default function SignUp() {
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     const [email, setEmail] = useState("");
+    const [phone, setPhone] = useState("");
     const [password, setPassword] = useState("");
     const [passwordConfirmation, setPasswordConfirmation] = useState("");
     const [image, setImage] = useState<File | null>(null);
@@ -40,6 +41,12 @@ export default function SignUp() {
             };
             reader.readAsDataURL(file);
         }
+    };
+
+    const validatePhoneNumber = (phone: string): boolean => {
+        // Basic phone number validation - accepts international format
+        const phoneRegex = /^\+?[1-9]\d{1,14}$/;
+        return phoneRegex.test(phone.replace(/\s/g, ''));
     };
 
     return (
@@ -89,6 +96,19 @@ export default function SignUp() {
                                 setEmail(e.target.value);
                             }}
                             value={email}
+                        />
+                    </div>
+                    <div className="grid gap-2">
+                        <Label htmlFor="phone">Phone Number</Label>
+                        <Input
+                            id="phone"
+                            type="tel"
+                            placeholder="+1234567890"
+                            required
+                            onChange={(e) => {
+                                setPhone(e.target.value);
+                            }}
+                            value={phone}
                         />
                     </div>
                     <div className="grid gap-2">
@@ -151,28 +171,65 @@ export default function SignUp() {
                         className="w-full"
                         disabled={loading}
                         onClick={async () => {
-                            await signUp.email({
-                                email,
-                                password,
-                                name: `${firstName} ${lastName}`,
-                                image: image ? await convertImageToBase64(image) : "",
-                                callbackURL: "/dashboard",
-                                fetchOptions: {
-                                    onResponse: () => {
-                                        setLoading(false);
+                            // Validate phone number (now required)
+                            if (!phone.trim() || !validatePhoneNumber(phone.trim())) {
+                                toast.error('Please enter a valid phone number (e.g., +1234567890)');
+                                return;
+                            }
+
+                            // Validate password confirmation
+                            if (password !== passwordConfirmation) {
+                                toast.error('Passwords do not match');
+                                return;
+                            }
+
+                            // Use custom sign-up since we need to handle phone number
+                            try {
+                                setLoading(true);
+
+                                // First create the user account with better-auth
+                                await signUp.email({
+                                    email: email || `temp_${Date.now()}@example.com`, // Use temp email if none provided
+                                    password,
+                                    name: `${firstName} ${lastName}`,
+                                    image: image ? await convertImageToBase64(image) : "",
+                                    callbackURL: "/dashboard",
+                                    fetchOptions: {
+                                        onResponse: () => {
+                                            setLoading(false);
+                                        },
+                                        onRequest: () => {
+                                            setLoading(true);
+                                        },
+                                        onError: (ctx) => {
+                                            toast.error(ctx.error.message);
+                                            setLoading(false);
+                                        },
+                                        onSuccess: async () => {
+                                            // Update user with phone number and email
+                                            try {
+                                                await fetch('/api/auth/update-user', {
+                                                    method: 'POST',
+                                                    headers: {
+                                                        'Content-Type': 'application/json',
+                                                    },
+                                                    body: JSON.stringify({
+                                                        phone: phone.trim(),
+                                                        email: email || null, // Set email to null if not provided
+                                                    }),
+                                                });
+                                            } catch (error) {
+                                                console.error('Failed to update user details:', error);
+                                            }
+                                            // Redirect to dashboard after successful sign up
+                                            router.push("/dashboard");
+                                        },
                                     },
-                                    onRequest: () => {
-                                        setLoading(true);
-                                    },
-                                    onError: (ctx) => {
-                                        toast.error(ctx.error.message);
-                                    },
-                                    onSuccess: async () => {
-                                        // Redirect to dashboard after successful sign up
-                                        router.push("/dashboard");
-                                    },
-                                },
-                            });
+                                });
+                            } catch (error) {
+                                toast.error('Failed to create account');
+                                setLoading(false);
+                            }
                         }}
                     >
                         {loading ? (

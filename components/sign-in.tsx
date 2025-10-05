@@ -18,10 +18,16 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 export default function SignIn() {
-    const [email, setEmail] = useState("");
+    const [identifier, setIdentifier] = useState("");
     const [password, setPassword] = useState("");
     const router = useRouter();
     const [loading, setLoading] = useState(false);
+
+    const validatePhoneNumber = (phone: string): boolean => {
+        // Basic phone number validation - accepts international format
+        const phoneRegex = /^\+?[1-9]\d{1,14}$/;
+        return phoneRegex.test(phone.replace(/\s/g, ''));
+    };
 
     return (
         <Card className="z-50 rounded-md rounded-t-none max-w-md">
@@ -126,16 +132,16 @@ export default function SignIn() {
 
                     {/* Email/Password Form */}
                     <div className="grid gap-2">
-                        <Label htmlFor="email">Email</Label>
+                        <Label htmlFor="identifier">Email or Phone Number</Label>
                         <Input
-                            id="email"
-                            type="email"
-                            placeholder="m@example.com"
+                            id="identifier"
+                            type="text"
+                            placeholder="m@example.com or +1234567890"
                             required
                             onChange={(e) => {
-                                setEmail(e.target.value);
+                                setIdentifier(e.target.value);
                             }}
-                            value={email}
+                            value={identifier}
                         />
                     </div>
                     <div className="grid gap-2">
@@ -154,28 +160,68 @@ export default function SignIn() {
                         className="w-full"
                         disabled={loading}
                         onClick={async () => {
-                            await signIn.email({
-                                email,
-                                password,
-                                callbackURL: "/dashboard",
-                                fetchOptions: {
-                                    onResponse: () => {
-                                        setLoading(false);
+                            // Check if identifier is email or phone number
+                            const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier);
+
+                            if (isEmail) {
+                                // Use email sign-in
+                                await signIn.email({
+                                    email: identifier,
+                                    password,
+                                    callbackURL: "/dashboard",
+                                    fetchOptions: {
+                                        onResponse: () => {
+                                            setLoading(false);
+                                        },
+                                        onRequest: () => {
+                                            setLoading(true);
+                                        },
+                                        onError: (ctx) => {
+                                            console.log("ctx=============================");
+                                            console.log(ctx.error.message);
+                                            toast.error(ctx.error.message);
+                                            setLoading(false);
+                                        },
+                                        onSuccess: async () => {
+                                            router.push("/dashboard");
+                                        },
                                     },
-                                    onRequest: () => {
-                                        setLoading(true);
-                                    },
-                                    onError: (ctx) => {
-                                        console.log("ctx=============================");
-                                        console.log(ctx.error.message);
-                                        toast.error(ctx.error.message);
-                                        setLoading(false);
-                                    },
-                                    onSuccess: async () => {
+                                });
+                            } else {
+                                // Validate phone number format
+                                if (!validatePhoneNumber(identifier)) {
+                                    toast.error('Please enter a valid email or phone number (e.g., +1234567890)');
+                                    return;
+                                }
+
+                                // Use custom sign-in for phone number
+                                try {
+                                    const response = await fetch('/api/auth/custom-signin', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                        },
+                                        body: JSON.stringify({
+                                            identifier,
+                                            password,
+                                        }),
+                                    });
+
+                                    const data = await response.json();
+
+                                    if (response.ok) {
+                                        toast.success('Signed in successfully');
                                         router.push("/dashboard");
-                                    },
-                                },
-                            });
+                                    } else {
+                                        toast.error(data.error || 'Invalid credentials');
+                                    }
+                                } catch (error) {
+                                    toast.error('An error occurred during sign-in');
+                                    console.error('Sign-in error:', error);
+                                } finally {
+                                    setLoading(false);
+                                }
+                            }
                         }}
                     >
                         {loading ? (
