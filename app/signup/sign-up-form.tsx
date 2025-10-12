@@ -13,8 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { signIn, signUp } from "@/lib/auth-client";
-import { Loader2, X } from "lucide-react";
-import Image from "next/image";
+import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -26,22 +25,10 @@ export default function SignUp() {
     const [phone, setPhone] = useState("");
     const [password, setPassword] = useState("");
     const [passwordConfirmation, setPasswordConfirmation] = useState("");
-    const [image, setImage] = useState<File | null>(null);
-    const [imagePreview, setImagePreview] = useState<string | null>(null);
+
     const router = useRouter();
     const [loading, setLoading] = useState(false);
 
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            setImage(file);
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setImagePreview(reader.result as string);
-            };
-            reader.readAsDataURL(file);
-        }
-    };
 
     const validatePhoneNumber = (phone: string): boolean => {
         // Basic phone number validation - accepts international format
@@ -133,39 +120,6 @@ export default function SignUp() {
                             placeholder="Confirm Password"
                         />
                     </div>
-                    <div className="grid gap-2">
-                        <Label htmlFor="image">Profile Image (optional)</Label>
-                        <div className="flex items-end gap-4">
-                            {imagePreview && (
-                                <div className="relative w-16 h-16 rounded-sm overflow-hidden">
-                                    <Image
-                                        src={imagePreview}
-                                        alt="Profile preview"
-                                        layout="fill"
-                                        objectFit="cover"
-                                    />
-                                </div>
-                            )}
-                            <div className="flex items-center gap-2 w-full">
-                                <Input
-                                    id="image"
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={handleImageChange}
-                                    className="w-full"
-                                />
-                                {imagePreview && (
-                                    <X
-                                        className="cursor-pointer"
-                                        onClick={() => {
-                                            setImage(null);
-                                            setImagePreview(null);
-                                        }}
-                                    />
-                                )}
-                            </div>
-                        </div>
-                    </div>
                     <Button
                         type="submit"
                         className="w-full"
@@ -192,7 +146,6 @@ export default function SignUp() {
                                     email: email || `temp_${Date.now()}@example.com`, // Use temp email if none provided
                                     password,
                                     name: `${firstName} ${lastName}`,
-                                    image: image ? await convertImageToBase64(image) : "",
                                     callbackURL: "/dashboard",
                                     fetchOptions: {
                                         onResponse: () => {
@@ -226,7 +179,7 @@ export default function SignUp() {
                                         },
                                     },
                                 });
-                            } catch (error) {
+                            } catch {
                                 toast.error('Failed to create account');
                                 setLoading(false);
                             }
@@ -341,13 +294,4 @@ export default function SignUp() {
             </CardFooter>
         </Card>
     );
-}
-
-async function convertImageToBase64(file: File): Promise<string> {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result as string);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-    });
 }

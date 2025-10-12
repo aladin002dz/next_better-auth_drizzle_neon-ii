@@ -271,15 +271,15 @@ export const auth = betterAuth({
 - Loading states and error handling
 - Automatic redirect on success
 
-#### Sign-Up Component (`components/sign-up.tsx`)
-- Complete registration form with profile image upload
+#### Sign-Up Component (`app/signup/sign-up-form.tsx`)
+- Complete registration form with name, email, phone, and password
 - Password confirmation
-- Image preview and removal functionality
-- Base64 image conversion for storage
+- Phone number validation
+- Social authentication options (Google, GitHub)
 
 #### Dashboard (`app/dashboard/page.tsx`)
 - Protected route with session validation
-- User profile display with avatar
+- User profile display with initials-based avatar
 - Account statistics and information
 - Quick actions for account management
 

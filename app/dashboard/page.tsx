@@ -1,7 +1,7 @@
 "use client";
 
 import EmailVerificationBanner from "@/components/email-verification-banner";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -108,7 +108,6 @@ export default function Dashboard() {
                         <CardContent className="space-y-6">
                             <div className="flex items-center gap-4">
                                 <Avatar className="h-20 w-20">
-                                    <AvatarImage src={user.image || undefined} />
                                     <AvatarFallback className="text-lg">
                                         {user.name
                                             ? user.name.split(" ").map(n => n[0]).join("").toUpperCase()
@@ -196,7 +195,7 @@ export default function Dashboard() {
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="text-center p-4 bg-muted/50 rounded-lg">
                                     <div className="text-2xl font-bold text-primary">
                                         {user.emailVerified ? "✓" : "⚠"}
@@ -206,17 +205,6 @@ export default function Dashboard() {
                                     </div>
                                     <div className="text-xs mt-1">
                                         {user.emailVerified ? "Verified" : "Unverified"}
-                                    </div>
-                                </div>
-                                <div className="text-center p-4 bg-muted/50 rounded-lg">
-                                    <div className="text-2xl font-bold text-primary">
-                                        {user.image ? "🖼" : "👤"}
-                                    </div>
-                                    <div className="text-sm text-muted-foreground">
-                                        Profile Picture
-                                    </div>
-                                    <div className="text-xs mt-1">
-                                        {user.image ? "Set" : "Not set"}
                                     </div>
                                 </div>
                                 <div className="text-center p-4 bg-muted/50 rounded-lg">
